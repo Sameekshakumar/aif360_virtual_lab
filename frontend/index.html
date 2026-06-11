@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/scale.png" />
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const favicon = document.querySelector('link[rel="icon"]');
+        const img = new Image();
+        img.src = favicon.href;
+    
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width || 32;
+          canvas.height = img.height || 32;
+          const ctx = canvas.getContext('2d');
+      
+          // Draw the original black icon
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+          // Tint it to your exact coral color (#e8836a)
+          ctx.globalCompositeOperation = 'source-in';
+          ctx.fillStyle = '#e8836a'; 
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+          // Replace the browser tab favicon source
+          favicon.href = canvas.toDataURL();
+        };
+    });
+</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIF360 Virtual Lab</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
