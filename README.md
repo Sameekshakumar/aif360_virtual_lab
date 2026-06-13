@@ -49,15 +49,17 @@ The frontend will run at `http://localhost:5173` (Vite will print the exact URL)
 4. The "Backend Connected" indicator (if shown) confirms the two are talking to each other.
 
 ## Project Structure
+
+```
 aif360_virtual_lab/
 ├── main.py              # FastAPI backend — all algorithm endpoints
-├── requirements.txt      # Python dependencies
+├── requirements.txt     # Python dependencies
 ├── backend/data/         # Dataset files (Adult, German, COMPAS)
 ├── frontend/              # React + Vite frontend
 │   ├── src/App.jsx       # Main application
 │   └── public/           # Icons, Jupyter notebooks for download
 └── Security_analysis.ipynb
-
+```
 ## Troubleshooting
 
 - **`ModuleNotFoundError`**: make sure your conda environment is activated and `pip install -r requirements.txt` completed without errors.
