@@ -23,7 +23,7 @@ class RunRequest(BaseModel):
     dataset: str
     protected_attr: str
 
-BASE = "/Users/sameekshakumar/aif_env/lib/python3.13/site-packages/aif360/data/raw"
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend", "data")
 
 def load_dataset(dataset: str, protected_attr: str):
     from aif360.datasets import BinaryLabelDataset
