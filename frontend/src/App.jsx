@@ -5,6 +5,8 @@ import {
   ResponsiveContainer, LineChart, Line, ReferenceLine
 } from "recharts"
 
+const API    = import.meta.env.VITE_API_URL || "http://localhost:8000"
+
 const NAVY   = "#1a1f3c"
 const NAVY2  = "#252b4a"
 const BG     = "#f0f2f8"
@@ -515,7 +517,7 @@ function DatasetExplorer() {
     if (previews[d]) { setExpanded(e => ({ ...e, [d]: !e[d] })); return }
     setLoading(l => ({ ...l, [d]: true }))
     try {
-      const res = await axios.get(`http://localhost:8000/dataset-preview/${d}`)
+      const res = await axios.get(`${API}/dataset-preview/${d}`)
       setPreviews(p => ({ ...p, [d]: res.data }))
       setExpanded(e => ({ ...e, [d]: true }))
     } catch { }
@@ -524,7 +526,7 @@ function DatasetExplorer() {
 
   const downloadCSV = (d) => {
     const link = document.createElement("a")
-    link.href = `http://localhost:8000/dataset-download/${d}`
+    link.href = `${API}/dataset-download/${d}`
     link.download = `${d}_dataset.csv`
     document.body.appendChild(link)
     link.click()
@@ -621,7 +623,7 @@ function AlgorithmsPage() {
   const loadDiff = async () => {
     setDiffLoading(true)
     try {
-      const res = await axios.get(`http://localhost:8000/algo-data-diff/${diffDataset}/${diffAttr}`)
+      const res = await axios.get(`${API}/algo-data-diff/${diffDataset}/${diffAttr}`)
       setDiffData(res.data)
       setShowDiff(true)
     } catch { }
@@ -813,7 +815,7 @@ export default function App() {
   const run = async () => {
     setLoading(true); setError(null); setResult(null); setShowExplain(true)
     try {
-      const r = await axios.post(`http://localhost:8000${algo.endpoint}`, { dataset, protected_attr: attr })
+      const r = await axios.post(`${API}${algo.endpoint}`, { dataset, protected_attr: attr })
       setResult(r.data)
     } catch { setError("Could not reach backend. Is uvicorn running?") }
     setLoading(false)
