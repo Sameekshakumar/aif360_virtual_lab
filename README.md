@@ -65,3 +65,14 @@ aif360_virtual_lab/
 - **`ModuleNotFoundError`**: make sure your conda environment is activated and `pip install -r requirements.txt` completed without errors.
 - **TensorFlow / numpy errors**: confirm you're using Python 3.10 — `python --version`. AIF360's adversarial debiasing algorithm is incompatible with Python 3.11+.
 - **Frontend shows "Could not reach backend"**: make sure uvicorn is running on port 8000 and there are no errors in its terminal.
+
+## References & Credits
+
+**Framework:** Bellamy et al., "AI Fairness 360: An Extensible Toolkit for Detecting and Mitigating Algorithmic Bias," IBM Journal of Research and Development, 2019. https://github.com/Trusted-AI/AIF360
+
+**Datasets:**
+- Adult Census: Becker & Kohavi (1996). UCI Machine Learning Repository. https://archive.ics.uci.edu/ml/datasets/adult
+- German Credit: Hofmann (1994). UCI Machine Learning Repository.
+- COMPAS: Angwin et al. (2016). ProPublica. https://github.com/propublica/compas-analysis
+
+**Algorithms:** Kamiran & Calders (2012) · Feldman et al. (2015) · Zhang et al. (2018) · Agarwal et al. (2018)

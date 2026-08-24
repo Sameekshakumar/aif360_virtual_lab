@@ -5,8 +5,6 @@ import {
   ResponsiveContainer, LineChart, Line, ReferenceLine
 } from "recharts"
 
-const API    = import.meta.env.VITE_API_URL || "http://localhost:8000"
-
 const NAVY   = "#1a1f3c"
 const NAVY2  = "#252b4a"
 const BG     = "#f0f2f8"
@@ -22,9 +20,9 @@ const DATASETS = ["adult", "german", "compas"]
 const ATTRS    = { adult: ["sex","race"], german: ["sex","age"], compas: ["sex","race"] }
 
 const DATASET_INFO = {
-  adult:  { full: "Adult Census",      desc: "US census income data predicting whether income exceeds $50K/year.", rows: "48,842", attrs: "14", label: "Income >$50K" },
-  german: { full: "German Credit",     desc: "German bank credit risk data classifying applicants as good or bad risk.", rows: "1,000",  attrs: "20", label: "Good Credit" },
-  compas: { full: "COMPAS Recidivism", desc: "Criminal recidivism predictions by Northpointe used in US courts.", rows: "7,214",  attrs: "7",  label: "No Recidivism" },
+  adult:  { full: "Adult Census",      desc: "US census income data predicting whether income exceeds $50K/year.", rows: "48,842", attrs: "14", label: "Income >$50K", source: "UCI Machine Learning Repository", sourceUrl: "https://archive.ics.uci.edu/ml/datasets/adult" },
+  german: { full: "German Credit",     desc: "German bank credit risk data classifying applicants as good or bad risk.", rows: "1,000",  attrs: "20", label: "Good Credit", source: "UCI Machine Learning Repository", sourceUrl: "https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)" },
+  compas: { full: "COMPAS Recidivism", desc: "Criminal recidivism predictions by Northpointe used in US courts.", rows: "7,214",  attrs: "7",  label: "No Recidivism", source: "ProPublica · compas-analysis", sourceUrl: "https://github.com/propublica/compas-analysis" },
 }
 
 const PROTECTED_LABELS = {
@@ -517,7 +515,7 @@ function DatasetExplorer() {
     if (previews[d]) { setExpanded(e => ({ ...e, [d]: !e[d] })); return }
     setLoading(l => ({ ...l, [d]: true }))
     try {
-      const res = await axios.get(`${API}/dataset-preview/${d}`)
+      const res = await axios.get(`http://localhost:8000/dataset-preview/${d}`)
       setPreviews(p => ({ ...p, [d]: res.data }))
       setExpanded(e => ({ ...e, [d]: true }))
     } catch { }
@@ -526,7 +524,7 @@ function DatasetExplorer() {
 
   const downloadCSV = (d) => {
     const link = document.createElement("a")
-    link.href = `${API}/dataset-download/${d}`
+    link.href = `http://localhost:8000/dataset-download/${d}`
     link.download = `${d}_dataset.csv`
     document.body.appendChild(link)
     link.click()
@@ -559,6 +557,10 @@ function DatasetExplorer() {
                   <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{v}</span>
                 </div>
               ))}
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <span style={{ fontSize: 12, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>Source</span>
+                <a href={info.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, fontWeight: 700, color: BLUE, textDecoration: "none" }}>{info.source}</a>
+              </div>
             </div>
 
             {/* Action buttons */}
@@ -623,7 +625,7 @@ function AlgorithmsPage() {
   const loadDiff = async () => {
     setDiffLoading(true)
     try {
-      const res = await axios.get(`${API}/algo-data-diff/${diffDataset}/${diffAttr}`)
+      const res = await axios.get(`http://localhost:8000/algo-data-diff/${diffDataset}/${diffAttr}`)
       setDiffData(res.data)
       setShowDiff(true)
     } catch { }
@@ -793,7 +795,7 @@ function AlgorithmsPage() {
 
 export default function App() {
   const [sidebar, setSidebar]         = useState(true)
-  const [page, setPage]               = useState("Lab")
+  const [page, setPage]               = useState("Introduction")
   const [dataset, setDataset]         = useState("adult")
   const [attr, setAttr]               = useState("sex")
   const [algoIdx, setAlgoIdx]         = useState(0)
@@ -815,7 +817,7 @@ export default function App() {
   const run = async () => {
     setLoading(true); setError(null); setResult(null); setShowExplain(true)
     try {
-      const r = await axios.post(`${API}${algo.endpoint}`, { dataset, protected_attr: attr })
+      const r = await axios.post(`http://localhost:8000${algo.endpoint}`, { dataset, protected_attr: attr })
       setResult(r.data)
     } catch { setError("Could not reach backend. Is uvicorn running?") }
     setLoading(false)
@@ -1303,6 +1305,49 @@ export default function App() {
                         <div style={{ fontWeight: 700, color: TEXT, fontSize: 14, marginBottom: 3 }}>{s.title}</div>
                         <div style={{ color: MUTED, fontSize: 13, lineHeight: 1.6 }}>{s.body}</div>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* References & Credits */}
+              <div style={card}>
+                <div style={{ fontWeight: 800, color: TEXT, fontSize: 16, marginBottom: 16 }}>References & Credits</div>
+                <div style={{ fontWeight: 700, color: CORAL, fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>Framework</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                  {[{ label: "IBM AIF360 Toolkit", citation: 'R. K. E. Bellamy et al., "AI Fairness 360: An Extensible Toolkit for Detecting and Mitigating Algorithmic Bias," IBM Journal of Research and Development, vol. 63, no. 4/5, 2019.', url: "https://github.com/Trusted-AI/AIF360" }].map(r => (
+                    <div key={r.label} style={{ background: BG, borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontWeight: 700, color: TEXT, fontSize: 13, marginBottom: 4 }}>{r.label}</div>
+                      <div style={{ color: MUTED, fontSize: 12, lineHeight: 1.6, marginBottom: 6 }}>{r.citation}</div>
+                      <a href={r.url} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: BLUE, textDecoration: "none", fontWeight: 600 }}>{r.url}</a>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontWeight: 700, color: CORAL, fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>Datasets</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                  {[
+                    { label: "Adult Census Income Dataset", citation: 'Becker, B. & Kohavi, R. (1996). Adult. UCI Machine Learning Repository. Extracted from the 1994 US Census database.', url: "https://archive.ics.uci.edu/ml/datasets/adult" },
+                    { label: "German Credit Dataset", citation: 'Hofmann, H. (1994). Statlog (German Credit Data). UCI Machine Learning Repository. South German Credit dataset.', url: "https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)" },
+                    { label: "COMPAS Recidivism Dataset", citation: 'Angwin, J., Larson, J., Mattu, S., & Kirchner, L. (2016). Machine Bias. ProPublica. Data from Broward County, Florida.', url: "https://github.com/propublica/compas-analysis" },
+                  ].map(r => (
+                    <div key={r.label} style={{ background: BG, borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontWeight: 700, color: TEXT, fontSize: 13, marginBottom: 4 }}>{r.label}</div>
+                      <div style={{ color: MUTED, fontSize: 12, lineHeight: 1.6, marginBottom: 6 }}>{r.citation}</div>
+                      <a href={r.url} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: BLUE, textDecoration: "none", fontWeight: 600 }}>{r.url}</a>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontWeight: 700, color: CORAL, fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>Algorithm Papers</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { label: "Reweighing", citation: 'Kamiran, F. & Calders, T. (2012). Data preprocessing techniques for classification without discrimination. Knowledge and Information Systems, 33(1), 1–33.' },
+                    { label: "Disparate Impact Remover", citation: 'Feldman, M., Friedler, S. A., Moeller, J., Scheidegger, C., & Venkatasubramanian, S. (2015). Certifying and removing disparate impact. KDD 2015.' },
+                    { label: "Adversarial Debiasing", citation: 'Zhang, B. H., Lemoine, B., & Mitchell, M. (2018). Mitigating unwanted biases with adversarial learning. AIES 2018.' },
+                    { label: "Exponentiated Gradient Reduction", citation: 'Agarwal, A., Beygelzimer, A., Dudík, M., Langford, J., & Wallach, H. (2018). A reductions approach to fair classification. ICML 2018.' },
+                  ].map(r => (
+                    <div key={r.label} style={{ background: BG, borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontWeight: 700, color: TEXT, fontSize: 13, marginBottom: 4 }}>{r.label}</div>
+                      <div style={{ color: MUTED, fontSize: 12, lineHeight: 1.6 }}>{r.citation}</div>
                     </div>
                   ))}
                 </div>
